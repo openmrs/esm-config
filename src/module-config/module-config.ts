@@ -6,6 +6,17 @@ const configs: object[] = [];
 // An object with module names for keys and schemas for values.
 const schemas = {};
 
+// Pull default config file from module-config
+const configPromise = System.import("module-config");                
+configPromise                                                        
+  .then(res => {                                                     
+    configs.unshift(res);                                            
+  })                                                                 
+  .catch(() => {                                                     
+    // do nothing; no config file has been provided via import map   
+  });                                                                
+
+
 export function defineConfigSchema(moduleName, schema) {
   // console.log( "defineConfigSchema received schema for " + moduleName + ": " + JSON.stringify(schema));
   schemas[moduleName] = schema;
