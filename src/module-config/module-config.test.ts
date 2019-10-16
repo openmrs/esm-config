@@ -34,4 +34,10 @@ describe("getConfig", () => {
       /schema.*defined/
     );
   });
+
+  it("receives config file from import map", () => {});
+
+  it("always puts config file from import map first", () => {});
+
+  it("does not 404 when no config file is in the import map", () => {});
 });
