@@ -34,10 +34,42 @@ describe("getConfig", () => {
       /schema.*defined/
     );
   });
+});
 
-  it("receives config file from import map", () => {});
+describe("resolveImportMapConfig", () => {
+  afterEach(() => {
+    Config.clearAll();
+    (<any>window).System.resolve.mockReset();
+    (<any>window).System.import.mockReset();
+  });
 
-  it("always puts config file from import map first", () => {});
+  it("gets config file from import map", async () => {
+    Config.defineConfigSchema("foo-module", { foo: { default: "qux" } });
+    const testConfig = { "foo-module": { foo: "bar" } };
+    (<any>window).System.resolve = jest.fn();
+    (<any>window).System.import = jest.fn().mockResolvedValue(testConfig);
+    await Config.resolveImportMapConfig();
+    const config = Config.getConfig("foo-module");
+    expect(config.foo).toBe("bar");
+  });
 
-  it("does not 404 when no config file is in the import map", () => {});
+  it("always puts config file from import map at lowest priority", async () => {
+    Config.defineConfigSchema("foo-module", { foo: { default: "qux" } });
+    const importedConfig = { "foo-module": { foo: "bar" } };
+    (<any>window).System.resolve = jest.fn();
+    (<any>window).System.import = jest.fn().mockResolvedValue(importedConfig);
+    const providedConfig = { "foo-module": { foo: "baz" } };
+    Config.provide(providedConfig);
+    await Config.resolveImportMapConfig();
+    const config = Config.getConfig("foo-module");
+    expect(config.foo).toBe("baz");
+  });
+
+  it("does not 404 when no config file is in the import map", async () => {
+    Config.defineConfigSchema("foo-module", { foo: { default: "qux" } });
+    // this line below is actually all that the test requires, the rest is sanity checking
+    expect(Config.resolveImportMapConfig).not.toThrow();
+    const config = Config.getConfig("foo-module");
+    expect(config.foo).toBe("qux");
+  });
 });
