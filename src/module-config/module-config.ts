@@ -7,35 +7,47 @@ const configs: object[] = [];
 const schemas = {};
 
 export function defineConfigSchema(moduleName, schema) {
-  // console.log( "defineConfigSchema received schema for " + moduleName + ": " + JSON.stringify(schema));
   schemas[moduleName] = schema;
 }
 
 export function provide(config) {
-  // console.log("provide recieved config " + JSON.stringify(config));
   configs.push(config);
 }
 
-let importMapConfigHasBeenAdded = false;
-export async function getConfig(moduleName: string): Promise<any> {
-  // Get config file from import map and prepend it to `configs`
-  if (!importMapConfigHasBeenAdded) {
-    let importMapConfigExists;
-    try {
-      System.resolve("config-file");
-      importMapConfigExists = true;
-    } catch {
-      importMapConfigExists = false;
-    }
+// We cache the Promise that loads the import mapped config file
+// so that we can be sure to only call it once
+let getImportMapConfigPromise;
+export async function getConfig(moduleName: string): Promise<object> {
+  if (!getImportMapConfigPromise) {
+    getImportMapConfigPromise = getImportMapConfigFile();
+  }
+  return getImportMapConfigPromise.then(() => getConfigForModule(moduleName));
+}
 
-    if (importMapConfigExists) {
-      await System.import("config-file").then(res => {
-        configs.unshift(res.default);
-        importMapConfigHasBeenAdded = true;
-      });
-    }
+// Get config file from import map and prepend it to `configs`
+function getImportMapConfigFile(): Promise<any> {
+  let importMapConfigExists;
+  try {
+    System.resolve("config-file");
+    importMapConfigExists = true;
+  } catch {
+    importMapConfigExists = false;
   }
 
+  if (importMapConfigExists) {
+    return System.import("config-file").then(res => {
+      configs.unshift(res.default);
+    });
+  } else {
+    return Promise.resolve();
+  }
+}
+
+function getAllConfigs(): object {
+  return {};
+}
+
+function getConfigForModule(moduleName: string): object {
   if (!schemas.hasOwnProperty(moduleName)) {
     throw Error("No config schema has been defined for " + moduleName);
   }
@@ -90,6 +102,7 @@ export async function getConfig(moduleName: string): Promise<any> {
 }
 
 export function clearAll() {
+  getImportMapConfigPromise = undefined;
   configs.length = 0;
   for (var member in schemas) delete schemas[member];
 }
