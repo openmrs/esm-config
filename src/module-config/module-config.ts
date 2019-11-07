@@ -43,10 +43,6 @@ function getImportMapConfigFile(): Promise<any> {
   }
 }
 
-function getAllConfigs(): object {
-  return {};
-}
-
 function getConfigForModule(moduleName: string): object {
   if (!schemas.hasOwnProperty(moduleName)) {
     throw Error("No config schema has been defined for " + moduleName);
