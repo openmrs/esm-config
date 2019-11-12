@@ -17,7 +17,7 @@ export function provide(config) {
 // We cache the Promise that loads the import mapped config file
 // so that we can be sure to only call it once
 let getImportMapConfigPromise;
-export async function getConfig(moduleName: string): Promise<object> {
+export async function getConfig(moduleName: string): Promise<ConfigObject> {
   if (!getImportMapConfigPromise) {
     getImportMapConfigPromise = getImportMapConfigFile();
   }
@@ -43,7 +43,7 @@ function getImportMapConfigFile(): Promise<any> {
   }
 }
 
-function getConfigForModule(moduleName: string): object {
+function getConfigForModule(moduleName: string): ConfigObject {
   if (!schemas.hasOwnProperty(moduleName)) {
     throw Error("No config schema has been defined for " + moduleName);
   }
@@ -101,4 +101,8 @@ export function clearAll() {
   getImportMapConfigPromise = undefined;
   configs.length = 0;
   for (var member in schemas) delete schemas[member];
+}
+
+export interface ConfigObject extends Object {
+  [key: string]: any;
 }

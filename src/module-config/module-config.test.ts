@@ -9,8 +9,8 @@ describe("getConfig", () => {
     Config.defineConfigSchema("foo-module", { foo: { default: "qux" } });
     const testConfig = { "foo-module": { foo: "bar" } };
     Config.provide(testConfig);
-    const config = Config.getConfig("foo-module");
-    await expect(config).resolves.toHaveProperty("foo", "bar");
+    const config = await Config.getConfig("foo-module");
+    expect(config.foo).toBe("bar");
   });
 
   it("returns default values from the schema", async () => {
@@ -19,8 +19,8 @@ describe("getConfig", () => {
         default: "qux"
       }
     });
-    const config = Config.getConfig("testmod");
-    await expect(config).resolves.toHaveProperty("foo", "qux");
+    const config = await Config.getConfig("testmod");
+    expect(config.foo).toBe("qux");
   });
 
   it("requires config values to have been defined in the schema", async () => {
@@ -70,10 +70,10 @@ describe("getConfig", () => {
       }
     };
     Config.provide(testConfig);
-    const config = Config.getConfig("foo-module");
-    await expect(config).resolves.toHaveProperty(["foo", "bar"], 0);
-    await expect(config).resolves.toHaveProperty(["foo", "baz", "qux"], "N/A");
-    await expect(config).resolves.toHaveProperty(["foo", "baz", "quy"], "xyz");
+    const config = await Config.getConfig("foo-module");
+    expect(config.foo.bar).toBe(0);
+    expect(config.foo.baz.qux).toBe("N/A");
+    expect(config.foo.baz.quy).toBe("xyz");
   });
 
   it("works for multiple modules", async () => {
@@ -100,8 +100,8 @@ describe("resolveImportMapConfig", () => {
     const testConfig = importableConfig({ "foo-module": { foo: "bar" } });
     (<any>window).System.resolve = jest.fn();
     (<any>window).System.import = jest.fn().mockResolvedValue(testConfig);
-    const config = Config.getConfig("foo-module");
-    await expect(config).resolves.toHaveProperty("foo", "bar");
+    const config = await Config.getConfig("foo-module");
+    expect(config.foo).toBe("bar");
   });
 
   it("always puts config file from import map at lowest priority", async () => {
@@ -111,14 +111,14 @@ describe("resolveImportMapConfig", () => {
     (<any>window).System.import = jest.fn().mockResolvedValue(importedConfig);
     const providedConfig = { "foo-module": { foo: "baz" } };
     Config.provide(providedConfig);
-    const config = Config.getConfig("foo-module");
-    await expect(config).resolves.toHaveProperty("foo", "baz");
+    const config = await Config.getConfig("foo-module");
+    expect(config.foo).toBe("baz");
   });
 
-  it("does not 404 when no config file is in the import map", async () => {
+  it("does not 404 when no config file is in the import map", () => {
     Config.defineConfigSchema("foo-module", { foo: { default: "qux" } });
     // this line below is actually all that the test requires, the rest is sanity checking
-    await expect(() => Config.getConfig("foo-module")).not.toThrow();
+    expect(() => Config.getConfig("foo-module")).not.toThrow();
   });
 });
 
