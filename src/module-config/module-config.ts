@@ -21,11 +21,12 @@ export async function getConfig(moduleName: string): Promise<ConfigObject> {
   if (!getImportMapConfigPromise) {
     getImportMapConfigPromise = getImportMapConfigFile();
   }
-  return getImportMapConfigPromise.then(() => getConfigForModule(moduleName));
+  await getImportMapConfigPromise;
+  return getConfigForModule(moduleName);
 }
 
 // Get config file from import map and prepend it to `configs`
-function getImportMapConfigFile(): Promise<any> {
+async function getImportMapConfigFile(): Promise<void> {
   let importMapConfigExists;
   try {
     System.resolve("config-file");
@@ -35,11 +36,8 @@ function getImportMapConfigFile(): Promise<any> {
   }
 
   if (importMapConfigExists) {
-    return System.import("config-file").then(res => {
-      configs.unshift(res.default);
-    });
-  } else {
-    return Promise.resolve();
+    const configFileModule = await System.import("config-file");
+    configs.unshift(configFileModule.default);
   }
 }
 
