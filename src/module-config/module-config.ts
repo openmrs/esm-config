@@ -110,7 +110,9 @@ function mergeConfigsFor(moduleName: string, allConfigs: Config[]) {
 }
 
 function mergeConfigs(configs: Config[]) {
-  const mergeDeepAll = R.reduce(R.mergeDeepRight, {});
+  const mergeDeepAll = R.reduce(R.mergeDeepRight, {}).filter(
+    item => item !== undefined && item !== null
+  );
   return mergeDeepAll(configs);
 }
 
