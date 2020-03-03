@@ -105,14 +105,14 @@ function getConfigForModule(moduleName: string): ConfigObject {
 }
 
 function mergeConfigsFor(moduleName: string, allConfigs: Config[]) {
-  const allConfigsForModule = R.map(R.prop(moduleName), allConfigs);
+  const allConfigsForModule = R.map(R.prop(moduleName), allConfigs).filter(
+    item => item !== undefined && item !== null
+  );
   return mergeConfigs(allConfigsForModule);
 }
 
 function mergeConfigs(configs: Config[]) {
-  const mergeDeepAll = R.reduce(R.mergeDeepRight, {}).filter(
-    item => item !== undefined && item !== null
-  );
+  const mergeDeepAll = R.reduce(R.mergeDeepRight, {});
   return mergeDeepAll(configs);
 }
 

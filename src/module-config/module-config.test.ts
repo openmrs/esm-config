@@ -124,55 +124,18 @@ describe("getConfig", () => {
 
     // TEST CASE 2: One that bugs out for multiple modules: see conversation on:
     // https://github.com/openmrs/openmrs-esm-module-config/pull/18
+    // This example fails because the merge function https://github.com/openmrs/openmrs-esm-module-config/blob/master/src/module-config/module-config.ts#L107
+    // introduces undefined into the final merged configs array i.e [ workingconfig, undefined ]
     Config.clearAll();
     Config.defineConfigSchema("@openmrs/esm-patient-chart", {
       defaultTabIndex: {
         default: 0
-      },
-      widgets: {
-        default: [
-          "summaries",
-          "results",
-          "orders",
-          "encounters",
-          "conditions",
-          "programs",
-          "allergies"
-        ],
-        arrayElements: { validators: [validators.isString] }
-      },
-      widgetDefinitions: {
-        arrayElements: {
-          name: { validators: [validators.isString] },
-          esModule: { validators: [validators.isString] },
-          label: { validators: [validators.isString] },
-          path: { validators: [validators.isString] }
-        },
-        default: []
       }
     });
     Config.defineConfigSchema("@openmrs/esm-login", {
-      chooseLocation: {
-        enabled: {
-          default: true
-        }
-      },
-      links: {
-        loginSuccess: {
-          url: {
-            default: "/home"
-          },
-          spa: {
-            default: true
-          }
-        }
-      },
       logo: {
         src: {
-          default: null // defaults to an SVG Sprite
-        },
-        alt: {
-          default: "Logo"
+          default: null
         }
       }
     });
@@ -180,33 +143,14 @@ describe("getConfig", () => {
     const login = {
       "@openmrs/esm-login": {
         logo: {
-          src: "https://ampath-poc.fra1.digitaloceanspaces.com/ampath.png",
-          alt: "Ampath Logo"
+          src: "https://ampath-poc.fra1.digitaloceanspaces.com/ampath.png"
         }
       }
     };
 
     const patientChart = {
       "@openmrs/esm-patient-chart": {
-        defaultTabIndex: 0,
-        widgets: [
-          "summaries",
-          "results",
-          "orders",
-          "encounters",
-          "conditions",
-          "programs",
-          "allergies",
-          "forms"
-        ],
-        widgetDefinitions: [
-          {
-            name: "forms",
-            label: "Forms",
-            esModule: "@ampath/esm-patient-chart-widgets",
-            path: "/forms"
-          }
-        ]
+        defaultTabIndex: 0
       }
     };
 
