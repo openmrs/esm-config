@@ -74,6 +74,7 @@
   "dependencies": {
     "@types/react": "^16.9.30",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "single-spa": "^5.5.1"
   }
 }
