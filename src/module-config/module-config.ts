@@ -150,6 +150,12 @@ function validateArray(arraySchema, value, keyPath) {
     );
     return;
   }
+  if (
+    hasObjectSchema(arraySchema.arrayElements) &&
+    arraySchema.arrayElements.skipValidations
+  ) {
+    return;
+  }
   // if there is an array element object schema, verify that elements match it
   if (hasObjectSchema(arraySchema.arrayElements)) {
     for (let i = 0; i < value.length; i++) {

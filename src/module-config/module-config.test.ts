@@ -330,7 +330,7 @@ describe("getConfig", () => {
     );
   });
 
-  it("skips validation for an schema property that has config.skipValidation = true", async () => {
+  it("skips validation if property skipValidation = true", async () => {
     Config.defineConfigSchema("foo-module", {
       foo: {
         default: "thing",
@@ -349,6 +349,32 @@ describe("getConfig", () => {
     await Config.getConfig("foo-module");
     expect(console.error).not.toHaveBeenCalledWith(
       expect.stringMatching(/bar.*foo.*must start with 'thi'.*/)
+    );
+  });
+
+  it("skips validation of array objects if property skipValidation = true", async () => {
+    Config.defineConfigSchema("foo-module", {
+      bar: {
+        default: [{ a: { b: 1 }, c: 2 }],
+        arrayElements: {
+          validators: [
+            validator(o => o.a.b + 1 == o.c, "c must equal a.b + 1")
+          ],
+          skipValidations: true
+        }
+      }
+    });
+    const testConfig = {
+      "foo-module": {
+        bar: [{ a: { b: 4 }, c: 5 }, { a: { b: 1 }, c: 3 }]
+      }
+    };
+    Config.provide(testConfig);
+    await Config.getConfig("foo-module");
+    expect(console.error).not.toHaveBeenCalledWith(
+      expect.stringMatching(
+        /value.*{\"a\":{\"b\":1},\"c\":3}.*foo-module.bar\[1\].*c must equal a\.b \+ 1/
+      )
     );
   });
 
