@@ -121,7 +121,7 @@ function mergeConfigs(configs: Config[]) {
 // Recursively check the provided config tree to make sure that all
 // of the provided properties exist in the schema. Run validators
 // where present in the schema.
-const validateConfig = (schema, config, keyPath = "") => {
+export const validateConfig = (schema, config, keyPath = "") => {
   for (let [key, value] of Object.entries(config)) {
     const thisKeyPath = keyPath + "." + key;
     if (!schema.hasOwnProperty(key)) {
