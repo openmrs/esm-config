@@ -126,6 +126,8 @@ const validateConfig = (schema, config, keyPath = "") => {
     const thisKeyPath = keyPath + "." + key;
     if (!schema.hasOwnProperty(key)) {
       console.error(`Unknown config key '${thisKeyPath}' provided. Ignoring.`);
+    } else if (schema[key].skipValidations === true) {
+      continue;
     } else if (isOrdinaryObject(value)) {
       // nested config; recurse
       const schemaPart = schema[key];
