@@ -146,17 +146,17 @@ export const validateConfig = (schema, config, keyPath = "") => {
   }
 };
 
-function validateDictionary(dictionarySchema, config, keyPath) {
+function validateDictionary(dictionarySchema, config, keyPath: string) {
   for (let [key, value] of Object.entries(config)) {
     validateConfig(
       dictionarySchema.dictionaryElements,
       value,
-      keyPath + "." + key
+      `${keyPath}.${key}`
     );
   }
 }
 
-function validateArray(arraySchema, value, keyPath) {
+function validateArray(arraySchema, value, keyPath: string) {
   // value should be an array
   if (!Array.isArray(value)) {
     console.error(
