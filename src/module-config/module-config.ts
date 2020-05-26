@@ -121,7 +121,11 @@ function mergeConfigs(configs: Config[]) {
 // Recursively check the provided config tree to make sure that all
 // of the provided properties exist in the schema. Run validators
 // where present in the schema.
-export const validateConfig = (schema, config, keyPath = "") => {
+export const validateConfig = (
+  schema: ConfigSchema,
+  config: ConfigObject,
+  keyPath: string = ""
+) => {
   if (schema.hasOwnProperty("dictionaryElements")) {
     validateDictionary(schema, config, keyPath);
     return;
@@ -146,7 +150,11 @@ export const validateConfig = (schema, config, keyPath = "") => {
   }
 };
 
-function validateDictionary(dictionarySchema, config, keyPath: string) {
+function validateDictionary(
+  dictionarySchema: ConfigSchema,
+  config: ConfigObject,
+  keyPath: string
+) {
   for (let [key, value] of Object.entries(config)) {
     validateConfig(
       dictionarySchema.dictionaryElements,
@@ -156,7 +164,11 @@ function validateDictionary(dictionarySchema, config, keyPath: string) {
   }
 }
 
-function validateArray(arraySchema, value, keyPath: string) {
+function validateArray(
+  arraySchema: ConfigSchema,
+  value: ConfigObject,
+  keyPath: string
+) {
   // value should be an array
   if (!Array.isArray(value)) {
     console.error(
