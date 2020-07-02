@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, MouseEvent } from "react";
 import { navigate, interpolateUrl } from "./navigate";
 
 const ConfigurableLink: FunctionComponent<ConfigurableLinkProps> = ({
@@ -15,10 +15,15 @@ const ConfigurableLink: FunctionComponent<ConfigurableLinkProps> = ({
   </a>
 );
 
-function handleClick(event, url: string) {
-  if (!event.ctrlKey && !event.metaKey && event.which == 0) {
+function handleClick(event: MouseEvent, to: string) {
+  if (
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    event.button == 0
+  ) {
     event.preventDefault();
-    navigate({ to: url });
+    navigate({ to });
   }
 }
 

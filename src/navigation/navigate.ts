@@ -14,7 +14,12 @@ export function navigate({ to }: NavigateOptions): void {
   }
 }
 
-// package-local / "protected"
+/**
+ * @internal
+ * Interpolates a string with openmrsBase and openmrsSpaBase
+ *
+ * @param template A string to interpolate
+ */
 export function interpolateUrl(template: string): string {
   return interpolateString(template, {
     openmrsBase: window.openmrsBase,
@@ -22,14 +27,12 @@ export function interpolateUrl(template: string): string {
   }).replace(/^\/\//, "/"); // remove extra initial slash if present
 }
 
-// package-local / "protected"
-export function interpolateString(template: string, params: object): string {
+function interpolateString(template: string, params: object): string {
   const names = Object.keys(params);
-  const vals = Object.values(params);
-  if (template.includes("`")) {
-    throw Error("Template may not include backticks");
-  }
-  return new Function(...names, `return \`${template}\`;`)(...vals);
+  return names.reduce(
+    (prev, curr) => prev.split("${" + curr + "}").join(params[curr]),
+    template
+  );
 }
 
 type NavigateOptions = {

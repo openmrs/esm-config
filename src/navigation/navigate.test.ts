@@ -1,4 +1,4 @@
-import { interpolateString, navigate } from "./navigate";
+import { interpolateUrl, navigate } from "./navigate";
 import { navigateToUrl } from "single-spa";
 
 jest.mock("single-spa");
@@ -66,29 +66,14 @@ describe("navigate", () => {
   });
 });
 
-describe("interpolateString", () => {
-  it("interpolates variables into the string", () => {
-    const result = interpolateString("test ${one} ${two} 3", {
-      one: 1,
-      two: 2
-    });
-    expect(result).toBe("test 1 2 3");
+describe("interpolateUrl", () => {
+  it("interpolates URL template elements", () => {
+    const result = interpolateUrl("test ${openmrsBase} ${openmrsSpaBase} ok");
+    expect(result).toBe("test /openmrs /openmrs/spa ok");
   });
 
-  it("ignores extra parameters", () => {
-    const result = interpolateString("test ${one}", {
-      one: 1,
-      two: 2
-    });
-    expect(result).toBe("test 1");
-  });
-
-  it("does not execute arbitrary code", () => {
-    expect(() =>
-      interpolateString(
-        '` + (function () { throw Error("evil"); })() + `${a}',
-        { a: 0 }
-      )
-    ).not.toThrowError("evil");
+  it("works when no interpolation needed", () => {
+    const result = interpolateUrl("test ok");
+    expect(result).toBe("test ok");
   });
 });
