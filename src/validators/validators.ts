@@ -38,7 +38,7 @@ export const isUrlWithTemplateParameters = (
     "openmrsSpaBase"
   ]);
   return validator(val => {
-    const matches = val.matchAll(/\${(.*?)}/);
+    const matches = val.matchAll(/\${(.*?)}/g);
     for (let match of matches) {
       if (!allowedParams.includes(match[1])) {
         return false;
